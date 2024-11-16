@@ -1,9 +1,9 @@
 pipeline {
     agent any
     tools {
-             nodejs 'NodeJS'
-             }
-  
+        nodejs 'NodeJS'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -13,10 +13,10 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-              sh 'npm install' 
+                sh 'npm install'
             }
         }
-       
+    }
 
     post {
         success {
@@ -27,3 +27,4 @@ pipeline {
         }
     }
 }
+
