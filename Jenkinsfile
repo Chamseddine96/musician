@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-               sh 'docker -t image_name:image_tag' 
+               sh 'docker.build("nodeimage"+"$BUILD_NUMBER")' 
             }
         }
     }
