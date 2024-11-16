@@ -16,6 +16,11 @@ pipeline {
                 sh 'npm install'
             }
         }
+        stage('Build Docker Image') {
+            steps {
+               sh 'docker -t image_name:image_tag' 
+            }
+        }
     }
 
     post {
