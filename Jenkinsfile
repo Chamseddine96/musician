@@ -3,7 +3,11 @@ pipeline {
     tools {
         nodejs 'NodeJS'
     }
-
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-jenkins-token'
+        DOCKER_REGISTRY = 'https://hub.docker.com/u/chamseddine96'
+        DOCKER_HUB_REPO = 'chamseddine96/music'
+    }
     stages {
         stage('Checkout Code') {
             steps {
@@ -19,9 +23,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
-                    docker build -t nodeimage${BUILD_NUMBER} .
-                """
+                script {
+                    dockerImage = docker.build("${DOCKER_HUB_REPO}:latest")
+                }
+            }
+        }
+
+        stage('Push Image to DockerHub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_CREDENTIALS_ID}") {
+                        dockerImage.push('latest')
+                    }
+                }
             }
         }
     }
