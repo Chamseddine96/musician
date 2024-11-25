@@ -42,11 +42,32 @@ pipeline {
                     }
                 }
             }
-        }
+        
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'music-token') { 
+                withSonarQubeEnv(credentialsId: 'music-token') {
+                    sh """
+                        ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://localhost:9000 \
+                        -Dsonar.login=${SONAR_TOKEN}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment completed successfully!'
+        }
+        failure {
+            echo 'Deployment failed. Please check the logs.'
+        }
+    }
+}
 
 
 
