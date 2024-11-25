@@ -46,7 +46,8 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'music-token') {
+                withSonarQubeEnv([string(credentialsId: 'music-token', variable: 'SONAR_TOKEN')]) {
+                     withSonarQubeEnv('SonarQube'){
                     sh """
                         ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                         -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
@@ -58,7 +59,7 @@ pipeline {
             }
         }
     }
-
+}
     post {
         success {
             echo 'Deployment completed successfully!'
