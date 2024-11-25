@@ -8,8 +8,9 @@ pipeline {
         VERSION = "${BUILD_NUMBER}"
         DOCKER_HUB_REPO = 'chamseddine96/music'
         SONAR_PROJECT_KEY = 'music'
-	SONAR_SCANNER_HOME = tool 'SonarQubeScanner'
+        SONAR_SCANNER_HOME = tool 'SonarQubeScanner'
     }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -26,7 +27,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                     dockerImage = docker.build("${DOCKER_HUB_REPO}:${VERSION}")
+                    dockerImage = docker.build("${DOCKER_HUB_REPO}:${VERSION}")
                     dockerImage.tag('latest')
                 }
             }
@@ -35,36 +36,17 @@ pipeline {
         stage('Push Image to DockerHub') {
             steps {
                 script {
-                     docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        dockerImage.push("${VERSION}")  
-                        dockerImage.push('latest')  
+                    docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                        dockerImage.push("${VERSION}")
+                        dockerImage.push('latest')
                     }
                 }
             }
-       stage('SonarQube Analysis'){
-           steps {
-                 withSonarQubeEnv([string(credentialsId: 'music-token', variable:'SONAR_TOKEN')]) {
-               sh """
-                  				${SONAR_SCANNER_HOME}/bin/sonar-scanner \
-                  				-Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                    				-Dsonar.sources=. \
-                   				-Dsonar.host.url=http://localhost:9000 \
-                    				-Dsonar.login=${SONAR_TOKEN}
-	       """
+        }
 
-              }
-          }
-        }
-    }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'music-token') { 
 
-    post {
-        success {
-            echo 'Deployment completed successfully!'
-        }
-        failure {
-            echo 'Deployment failed. Please check the logs.'
-        }
-    }
-}
 
 
